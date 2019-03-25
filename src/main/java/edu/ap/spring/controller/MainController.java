@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class MainController {
 
-  @Autowired
+    @Autowired
 	private BlockChain bChain;
 	@Autowired
 	private Wallet coinbase, walletA, walletB;
@@ -94,12 +94,17 @@ public class MainController {
 		
 	  bChain.addBlock(block);
 		
-    return "redirect:/balance/" + wallet1;
+      return "redirect:/balance/" + wallet1;
     }
 
 	@GetMapping(value="/alltransactions")
 	public @ResponseBody String alltransactions() {
-		/*Block block = new Block();
+		return this.bChain.toJSON();
+	}
+
+	@GetMapping("/test")
+	public @ResponseBody String testDB() {
+	  /*Block block = new Block();
 	  block.setPreviousHash(bChain.getLastHash());
 
 		try {
@@ -108,8 +113,9 @@ public class MainController {
 		}
 		catch(Exception e) {}
 		
-	  bChain.addBlock(block);
+	    bChain.addBlock(block);
 		return "redirect:/balance/walletA";*/
+		this.bChain.loadFromDB();
 
 		return this.bChain.toJSON();
 	}

@@ -81,6 +81,7 @@ public class BlockChain {
 
 	public void loadFromDB() {
 		Iterator<Block> iterator = repository.findAll().iterator();
+		this.blocks.clear();
 		while(iterator.hasNext()) {
 			this.addBlock(iterator.next());
 		}
