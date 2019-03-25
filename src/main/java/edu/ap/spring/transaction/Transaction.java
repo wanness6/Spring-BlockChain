@@ -1,12 +1,14 @@
 package edu.ap.spring.transaction;
 
+import java.io.Serializable;
 import java.security.*;
 
 import edu.ap.spring.service.BlockChain;
 import edu.ap.spring.service.StringUtil;
 
-public class Transaction {
+public class Transaction implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
 	public String transactionId; // contains a hash of transaction
 	public PublicKey sender; // senders address/public key.
 	public PublicKey recipient; // recipients address/public key.

@@ -3,43 +3,37 @@ package edu.ap.spring.service;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 import org.json.JSONObject;
 
 import edu.ap.spring.transaction.Transaction;
 
+@Entity
 public class Block {
 	
+	@Id
+    @GeneratedValue
+    private Long id;
+	@Column
 	public String hash;
+	@Column
 	public String previousHash; 
+	@Column
 	public String merkleRoot;
+	@Column(length=1000)
 	private ArrayList<Transaction> transactions = new ArrayList<Transaction>(); // our data will be a simple message.
+	@Column
 	public long timeStamp; // as number of milliseconds since 1/1/1970.
+	@Column
 	public int nonce;
 	
 	public Block() {
 		this.setTimeStamp();
 		this.calculateHash();
-	}
-
-	public Block(String json) {
-		JSONObject blockObj = new JSONObject(json);
-		this.hash = blockObj.getString("hash");
-		this.merkleRoot = blockObj.getString("merkleRoot");
-		this.nonce = blockObj.getInt("nonce");
-		this.previousHash = blockObj.getString("previousHash");
-		this.timeStamp = blockObj.getLong("timeStamp");
-		/*JSONObject[] trs = new JSONObject[this.getTransactions().size()];
-		int j = 0;
-		for(Transaction t : this.getTransactions()) {
-			JSONObject tr = new JSONObject();
-			tr.put("recipient", t.recipient.toString());
-			tr.put("sender", t.sender.toString());
-			tr.put("transactionId", t.transactionId);
-			tr.put("value", t.value);
-
-			trs[j] = tr;
-			j++;
-		}*/
 	}
 	
 	public void setPreviousHash(String previousHash) {

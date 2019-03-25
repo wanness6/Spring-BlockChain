@@ -9,15 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import edu.ap.spring.jpa.BlockEntity;
-import edu.ap.spring.jpa.BlockChainEntityRepository;
+import edu.ap.spring.jpa.BlockRepository;
 
 @Service
 @Scope("singleton")
 public class BlockChain {
 	
 	@Autowired
-	private BlockChainEntityRepository repository;
+	private BlockRepository repository;
 	private ArrayList<Block> blocks = new ArrayList<Block>();
 	private int difficulty = 1;
 	
@@ -64,7 +63,7 @@ public class BlockChain {
 	public void addBlock(Block newBlock) {
 		newBlock.mineBlock(difficulty);
 		this.blocks.add(newBlock);
-		repository.save(new BlockEntity(newBlock.toJSON()));
+		repository.save(newBlock);
 	}
 
 	public String getLastHash() {
@@ -81,10 +80,9 @@ public class BlockChain {
 	}
 
 	public void loadFromDB() {
-		Iterator<BlockEntity> iterator = repository.findAll().iterator();
+		Iterator<Block> iterator = repository.findAll().iterator();
 		while(iterator.hasNext()) {
-			Block block = new Block(iterator.next().getJson());
-			this.addBlock(block);
+			this.addBlock(iterator.next());
 		}
 	}
 }

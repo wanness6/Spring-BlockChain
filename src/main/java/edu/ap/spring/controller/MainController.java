@@ -97,11 +97,6 @@ public class MainController {
     return "redirect:/balance/" + wallet1;
     }
 
-	@GetMapping(value="/bchainjson")
-	public @ResponseBody String getJSON() {
-		return this.bChain.toJSON();
-	}
-
 	@GetMapping(value="/alltransactions")
 	public @ResponseBody String alltransactions() {
 		/*Block block = new Block();
