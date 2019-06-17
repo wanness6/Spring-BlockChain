@@ -13,11 +13,10 @@ import edu.ap.spring.transaction.Transaction;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 @Controller
 public class MainController {
 
-    @Autowired
+  @Autowired
 	private BlockChain bChain;
 	@Autowired
 	private Wallet coinbase, walletA, walletB;

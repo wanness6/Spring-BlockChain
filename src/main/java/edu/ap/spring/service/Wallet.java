@@ -40,11 +40,13 @@ public class Wallet {
 	}
 	
 	public float getBalance() {
-		float total = 0;	
+		System.out.println(this.getPublicKey());
+		float total = 0;
 		for(Block block : bChain.getBlocks()) {
 			ArrayList<Transaction> transactions = block.getTransactions();
 			for(Transaction tr : transactions) {
-				if(tr.sender == this.publicKey) {
+				System.out.println(tr.recipient);
+				if(tr.sender == this.getPublicKey()) {
 					total -= tr.value;
 				}
 				else if(tr.recipient == this.getPublicKey()) {
