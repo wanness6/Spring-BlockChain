@@ -30,7 +30,7 @@ public class BlockChain {
 		return this.blocks;
 	}
 
-	public Boolean isChainValid() {
+	public boolean isValid() {
 		Block currentBlock; 
 		Block previousBlock;
 		String hashTarget = new String(new char[difficulty]).replace('\0', '0');
@@ -40,23 +40,27 @@ public class BlockChain {
 			
 			currentBlock = blocks.get(i);
 			previousBlock = blocks.get(i-1);
+			
 			//compare registered hash and calculated hash:
 			if(!currentBlock.hash.equals(currentBlock.calculateHash()) ){
 				System.out.println("# Current Hashes not equal");
 				return false;
 			}
+
 			//compare previous hash and registered previous hash
-			if(!previousBlock.hash.equals(currentBlock.previousHash) ) {
+			if(!previousBlock.hash.equals(currentBlock.previousHash)) {
+				System.out.println(previousBlock.hash + " / " + currentBlock.previousHash);
 				System.out.println("# Previous Hashes not equal");
 				return false;
 			}
+			
 			//check if hash is solved
-			if(!currentBlock.hash.substring( 0, difficulty).equals(hashTarget)) {
+			if(!currentBlock.hash.substring(0, difficulty).equals(hashTarget)) {
 				System.out.println("# This block hasn't been mined");
 				return false;
 			}
 		}
-		System.out.println("Blockchain is valid");
+
 		return true;
 	}
 	

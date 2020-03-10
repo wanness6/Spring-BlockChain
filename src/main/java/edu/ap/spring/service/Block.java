@@ -48,7 +48,7 @@ public class Block {
 		return this.transactions;
 	}
 	
-	// calculate new hash based on blocks contents
+	//calculate new hash based on blocks contents
 	public String calculateHash() {
 		String calculatedhash = StringUtil.applySha256( 
 				previousHash +
@@ -61,7 +61,7 @@ public class Block {
 		return calculatedhash;
 	}
 	
-	// increases nonce value until hash target is reached.
+	//increases nonce value until hash target is reached.
 	public void mineBlock(int difficulty) {
 		merkleRoot = StringUtil.getMerkleRoot(transactions);
 		String target = StringUtil.getDificultyString(difficulty); // create a string with difficulty * "0" 
@@ -69,10 +69,9 @@ public class Block {
 			nonce ++;
 			hash = calculateHash();
 		}
-		//System.out.println("Block Mined : " + hash);
 	}
 	
-	// add transactions to this block
+	//add transactions to this block
 	public boolean addTransaction(Transaction transaction, BlockChain bChain) {
 		// process transaction and check if valid, unless block is genesis block then ignore.
 		if(transaction == null) return false;		
@@ -82,9 +81,8 @@ public class Block {
 				return false;
 			}
 		}
-
 		transactions.add(transaction);
-		//System.out.println("Transaction successfully added to Block");
+
 		return true;
 	}
 
@@ -95,10 +93,10 @@ public class Block {
 	public String toJSON() {
 		JSONObject blockObj = new JSONObject();
 		blockObj.put("hash", this.hash);
-		blockObj.put("merkleRoot", this.merkleRoot);
-		blockObj.put("nonce", this.nonce);
+		//blockObj.put("merkleRoot", this.merkleRoot);
+		//blockObj.put("nonce", this.nonce);
 		blockObj.put("previousHash", this.previousHash);
-		blockObj.put("timeStamp", this.timeStamp);
+		//blockObj.put("timeStamp", this.timeStamp);
 		JSONObject[] trs = new JSONObject[this.getTransactions().size()];
 		int j = 0;
 		for(Transaction t : this.getTransactions()) {

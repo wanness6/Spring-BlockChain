@@ -6,6 +6,4 @@ import org.springframework.stereotype.Repository;
 import edu.ap.spring.service.Block;
 
 @Repository
-public interface BlockRepository extends CrudRepository<Block, Long> { 
-
-}
+public interface BlockRepository extends CrudRepository<Block, Long> { }

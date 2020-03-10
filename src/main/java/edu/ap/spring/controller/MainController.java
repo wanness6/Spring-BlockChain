@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class MainController {
 
-  @Autowired
-	private BlockChain bChain;
-	@Autowired
-	private Wallet coinbase, walletA, walletB;
-	private Transaction genesisTransaction;
+ 	@Autowired
+  	private BlockChain bChain;
+  	@Autowired
+  	private Wallet coinbase, walletA, walletB;
+  	private Transaction genesisTransaction;
 
-	@PostConstruct
+  	@PostConstruct
   	private void init() {
 		bChain.setSecurity();
 		coinbase.generateKeyPair();
@@ -39,15 +39,15 @@ public class MainController {
 		genesis.setPreviousHash("0");
 		genesis.addTransaction(genesisTransaction, bChain);
 		bChain.addBlock(genesis);
-	}
+  	}
 
-   @GetMapping(value="/")
-   public String index() {
+  	@GetMapping(value="/")
+   	public String index() {
 	   return "redirect:/balance/walletA";
-   }
+   	}
 
-   @GetMapping(value="/balance/{wallet}")
-   public String getBalance(@PathVariable("wallet") String wallet,
+  	@GetMapping(value="/balance/{wallet}")
+   	public String getBalance(@PathVariable("wallet") String wallet,
                             Model model) {
      	
 	  model.addAttribute("wallet", wallet);
@@ -56,27 +56,27 @@ public class MainController {
 	  	model.addAttribute("balance", walletA.getBalance());
 	  }
 	  else if(wallet.equalsIgnoreCase("walletB")) {
-			model.addAttribute("balance", walletB.getBalance());
+		model.addAttribute("balance", walletB.getBalance());
 	  }
 	  else {
-			model.addAttribute("balance", 0f);
+		model.addAttribute("balance", 0f);
 	  }
       
     return "balance";
-  }
+  	}
 
-  @GetMapping(value="/transaction")
-  public String getForm() {
+  	@GetMapping(value="/transaction")
+  	public String getForm() {
 	  return "transaction";
-  }
+  	}
 
-  @PostMapping(value="/transaction")
-  public String transaction(@RequestParam("wallet1") String wallet1, 
+  	@PostMapping(value="/transaction")
+  	public String transaction(@RequestParam("wallet1") String wallet1, 
                             @RequestParam("wallet2") String wallet2,
                             @RequestParam("amount") float amount) {
 	
 		Block block = new Block();
-	  block.setPreviousHash(bChain.getLastHash());
+	  	block.setPreviousHash(bChain.getLastHash());
 
 		try {
 			if(wallet1.equalsIgnoreCase("walletA") && wallet2.equalsIgnoreCase("walletB")) {
@@ -103,19 +103,10 @@ public class MainController {
 
 	@GetMapping("/test")
 	public @ResponseBody String testDB() {
-	  /*Block block = new Block();
-	  block.setPreviousHash(bChain.getLastHash());
+	  
+		/*this.bChain.loadFromDB();
+		return this.bChain.toJSON();*/
 
-		try {
-				block.addTransaction(walletA.sendFunds(walletB.getPublicKey(), 10f), bChain);
-				block.addTransaction(walletB.sendFunds(walletA.getPublicKey(), 10f), bChain);
-		}
-		catch(Exception e) {}
-		
-	    bChain.addBlock(block);
-		return "redirect:/balance/walletA";*/
-		this.bChain.loadFromDB();
-
-		return this.bChain.toJSON();
+		return "BlockChain valid : " + this.bChain.isValid();
 	}
 }

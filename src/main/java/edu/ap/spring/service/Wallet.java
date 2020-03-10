@@ -28,7 +28,7 @@ public class Wallet {
 			SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
 			ECGenParameterSpec ecSpec = new ECGenParameterSpec("prime192v1");
 			// initialize the key generator and generate a KeyPair
-			keyGen.initialize(ecSpec, random); //256 
+			keyGen.initialize(ecSpec, random); // 256 
 	        KeyPair keyPair = keyGen.generateKeyPair();
 	        // set the public and private keys from the keyPair
 	        this.privateKey = keyPair.getPrivate();
@@ -40,7 +40,6 @@ public class Wallet {
 	}
 	
 	public float getBalance() {
-		System.out.println(this.getPublicKey());
 		float total = 0;
 		for(Block block : bChain.getBlocks()) {
 			ArrayList<Transaction> transactions = block.getTransactions();

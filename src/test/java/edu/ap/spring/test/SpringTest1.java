@@ -5,10 +5,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import org.junit.*;
 import org.junit.runners.MethodSorters;
+import org.mockito.Mockito;
 
 import edu.ap.spring.service.*;
 import edu.ap.spring.transaction.Transaction;
@@ -22,10 +23,16 @@ public class SpringTest1 {
 	private BlockChain bChain;
 	@Autowired
 	private Wallet coinbase, walletA, walletB;
+	private Wallet walletC = Mockito.mock(Wallet.class);
 	private Transaction genesisTransaction;
+	private static boolean setUpIsDone = false;
 
 	@Before
+	//https://www.baeldung.com/junit-before-beforeclass-beforeeach-beforeall
 	public void init() {
+		if(setUpIsDone) {
+        	return;
+    	}
 		bChain.setSecurity();
 		coinbase.generateKeyPair();
 		walletA.generateKeyPair();
@@ -34,22 +41,24 @@ public class SpringTest1 {
 		//create genesis transaction, which sends 100 coins to walletA:
 		genesisTransaction = new Transaction(coinbase.getPublicKey(), walletA.getPublicKey(), 100f);
 		genesisTransaction.generateSignature(coinbase.getPrivateKey());	 // manually sign the genesis transaction	
-		genesisTransaction.transactionId = "0"; // manually set the transaction id
+		genesisTransaction.transactionId = "0"; // manually set the transaction id*/
 						
 		//creating and Mining Genesis block
-		Block genesis = new Block();
-		genesis.setPreviousHash("0");
-		genesis.addTransaction(genesisTransaction, bChain);
-		bChain.addBlock(genesis);
+		Block genesisBlock = new Block();
+		genesisBlock.setPreviousHash("0");
+		genesisBlock.addTransaction(genesisTransaction, bChain);
+		bChain.addBlock(genesisBlock);
+
+		setUpIsDone = true;
 	}
 	
 	@After
 	public void after() {
-		// cleanup
+		//cleanup
  	}
 
 	@Test
-	public void transaction1() {
+	public void test1() {
 		Block block = new Block();
 		block.setPreviousHash(bChain.getLastHash());
 			
@@ -59,8 +68,22 @@ public class SpringTest1 {
 		catch(Exception e) {}
 		
 		bChain.addBlock(block);
-		
+
 		assertEquals(60f, walletA.getBalance(), 0);
 		assertEquals(40f, walletB.getBalance(), 0);
+	}
+
+	@Test
+	public void test2() {
+
+		assertTrue(bChain.isValid());
+	}
+
+	@Test
+	public void test3() {
+
+		//configure mocking behaviour
+		Mockito.when(walletC.getBalance()).thenReturn(50f);
+		assertEquals(50F, walletC.getBalance(), 0);
 	}
 }
