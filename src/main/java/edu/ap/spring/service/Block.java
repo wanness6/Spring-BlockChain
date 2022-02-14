@@ -3,32 +3,18 @@ package edu.ap.spring.service;
 import java.util.ArrayList;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import edu.ap.spring.transaction.Transaction;
 
-@Entity
 public class Block {
 	
-	@Id
-    @GeneratedValue
-    private Long id;
-	@Column
 	public String hash;
-	@Column
 	public String previousHash; 
-	@Column
 	public String merkleRoot;
-	@Column(length=1000)
 	private ArrayList<Transaction> transactions = new ArrayList<Transaction>(); // our data will be a simple message.
-	@Column
 	public long timeStamp; // as number of milliseconds since 1/1/1970.
-	@Column
 	public int nonce;
 	
 	public Block() {
@@ -48,7 +34,7 @@ public class Block {
 		return this.transactions;
 	}
 	
-	//calculate new hash based on blocks contents
+	// calculate new hash based on blocks contents
 	public String calculateHash() {
 		String calculatedhash = StringUtil.applySha256( 
 				previousHash +
@@ -61,7 +47,7 @@ public class Block {
 		return calculatedhash;
 	}
 	
-	//increases nonce value until hash target is reached.
+	// increases nonce value until hash target is reached.
 	public void mineBlock(int difficulty) {
 		merkleRoot = StringUtil.getMerkleRoot(transactions);
 		String target = StringUtil.getDificultyString(difficulty); // create a string with difficulty * "0" 
@@ -71,7 +57,7 @@ public class Block {
 		}
 	}
 	
-	//add transactions to this block
+	// add transactions to this block
 	public boolean addTransaction(Transaction transaction, BlockChain bChain) {
 		// process transaction and check if valid, unless block is genesis block then ignore.
 		if(transaction == null) return false;		
@@ -90,7 +76,7 @@ public class Block {
 		this.transactions.clear();
 	}
 
-	public String toJSON() {
+	public String toJSON() throws JSONException {
 		JSONObject blockObj = new JSONObject();
 		blockObj.put("hash", this.hash);
 		//blockObj.put("merkleRoot", this.merkleRoot);

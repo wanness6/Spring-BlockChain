@@ -1,89 +1,48 @@
 package edu.ap.spring.test;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import static org.junit.Assert.*;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
-import org.junit.*;
-import org.junit.runners.MethodSorters;
-import org.mockito.Mockito;
-
-import edu.ap.spring.service.*;
-import edu.ap.spring.transaction.Transaction;
-
-@RunWith(SpringRunner.class)
 @SpringBootTest
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+
 public class SpringTest1 {
+    
+    @Test
+    public void test1() throws Exception{
+        TestRestTemplate testRestTemplate = new TestRestTemplate();
+        ResponseEntity<String> response1 = testRestTemplate.getForEntity("http://localhost:8080/balance/walletA", String.class);
+        ResponseEntity<String> response2 = testRestTemplate.getForEntity("http://localhost:8080/balance/walletB", String.class);
 
-	@Autowired
-	private BlockChain bChain;
-	@Autowired
-	private Wallet coinbase, walletA, walletB;
-	private Wallet walletC = Mockito.mock(Wallet.class);
-	private Transaction genesisTransaction;
-	private static boolean setUpIsDone = false;
+        assertTrue(response1.getBody().contains("100.0"));
+        assertTrue(response2.getBody().contains("0.0"));
+    }
 
-	@Before
-	//https://www.baeldung.com/junit-before-beforeclass-beforeeach-beforeall
-	public void init() {
-		if(setUpIsDone) {
-        	return;
-    	}
-		bChain.setSecurity();
-		coinbase.generateKeyPair();
-		walletA.generateKeyPair();
-		walletB.generateKeyPair();
+    @Test
+    public void test2() throws Exception{
+        TestRestTemplate testRestTemplate = new TestRestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+        map.add("wallet1", "walletA");
+        map.add("wallet2", "walletB");
+        map.add("amount", "30.0");
 
-		//create genesis transaction, which sends 100 coins to walletA:
-		genesisTransaction = new Transaction(coinbase.getPublicKey(), walletA.getPublicKey(), 100f);
-		genesisTransaction.generateSignature(coinbase.getPrivateKey());	 // manually sign the genesis transaction	
-		genesisTransaction.transactionId = "0"; // manually set the transaction id*/
-						
-		//creating and Mining Genesis block
-		Block genesisBlock = new Block();
-		genesisBlock.setPreviousHash("0");
-		genesisBlock.addTransaction(genesisTransaction, bChain);
-		bChain.addBlock(genesisBlock);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+        testRestTemplate.postForEntity("http://localhost:8080/transation", request, String.class);
 
-		setUpIsDone = true;
-	}
-	
-	@After
-	public void after() {
-		//cleanup
- 	}
+        ResponseEntity<String> response1 = testRestTemplate.getForEntity("http://localhost:8080/balance/walletA", String.class);
+        ResponseEntity<String> response2 = testRestTemplate.getForEntity("http://localhost:8080/balance/walletB", String.class);
 
-	@Test
-	public void test1() {
-		Block block = new Block();
-		block.setPreviousHash(bChain.getLastHash());
-			
-		try {
-			block.addTransaction(walletA.sendFunds(walletB.getPublicKey(), 40f), bChain);
-		} 
-		catch(Exception e) {}
-		
-		bChain.addBlock(block);
-
-		assertEquals(60f, walletA.getBalance(), 0);
-		assertEquals(40f, walletB.getBalance(), 0);
-	}
-
-	@Test
-	public void test2() {
-
-		assertTrue(bChain.isValid());
-	}
-
-	@Test
-	public void test3() {
-
-		//configure mocking behaviour
-		Mockito.when(walletC.getBalance()).thenReturn(50f);
-		assertEquals(50F, walletC.getBalance(), 0);
-	}
+        assertTrue(response1.getBody().contains("70.0"));
+        assertTrue(response2.getBody().contains("30.0"));
+    }
 }

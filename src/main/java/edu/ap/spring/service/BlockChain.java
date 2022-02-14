@@ -2,21 +2,15 @@ package edu.ap.spring.service;
 
 import java.security.Security;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-
-import edu.ap.spring.jpa.BlockRepository;
 
 @Service
 @Scope("singleton")
 public class BlockChain {
 	
-	@Autowired
-	private BlockRepository repository;
 	private ArrayList<Block> blocks = new ArrayList<Block>();
 	private int difficulty = 1;
 	
@@ -67,7 +61,6 @@ public class BlockChain {
 	public void addBlock(Block newBlock) {
 		newBlock.mineBlock(difficulty);
 		this.blocks.add(newBlock);
-		repository.save(newBlock);
 	}
 
 	public String getLastHash() {
@@ -77,17 +70,14 @@ public class BlockChain {
 	public String toJSON() {
 		JSONObject jsonObj = new JSONObject();
 		for(int i = 0; i < blocks.size(); i++) {
-			jsonObj.put("block" + i, blocks.get(i).toJSON()); 
+			try {
+				jsonObj.put("block" + i, blocks.get(i).toJSON());
+			}
+			catch(Exception e) {
+				System.out.println(e.getMessage());
+			} 
 		}
 
 		return jsonObj.toString();
-	}
-
-	public void loadFromDB() {
-		Iterator<Block> iterator = repository.findAll().iterator();
-		this.blocks.clear();
-		while(iterator.hasNext()) {
-			this.addBlock(iterator.next());
-		}
 	}
 }

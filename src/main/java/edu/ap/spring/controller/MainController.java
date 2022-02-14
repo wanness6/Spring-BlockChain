@@ -48,7 +48,7 @@ public class MainController {
 
   	@GetMapping(value="/balance/{wallet}")
    	public String getBalance(@PathVariable("wallet") String wallet,
-                            Model model) {
+                             Model model) {
      	
 	  model.addAttribute("wallet", wallet);
 
@@ -72,8 +72,8 @@ public class MainController {
 
   	@PostMapping(value="/transaction")
   	public String transaction(@RequestParam("wallet1") String wallet1, 
-                            @RequestParam("wallet2") String wallet2,
-                            @RequestParam("amount") float amount) {
+                              @RequestParam("wallet2") String wallet2,
+                              @RequestParam("amount") float amount) {
 	
 		Block block = new Block();
 	  	block.setPreviousHash(bChain.getLastHash());
@@ -101,12 +101,8 @@ public class MainController {
 		return this.bChain.toJSON();
 	}
 
-	@GetMapping("/test")
-	public @ResponseBody String testDB() {
-	  
-		/*this.bChain.loadFromDB();
-		return this.bChain.toJSON();*/
-
-		return "BlockChain valid : " + this.bChain.isValid();
+	@GetMapping(value="/valid")
+	public @ResponseBody String testValidity() {
+		return "Valid : " + this.bChain.isValid();
 	}
 }
