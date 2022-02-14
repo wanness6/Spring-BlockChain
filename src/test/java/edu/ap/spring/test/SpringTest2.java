@@ -61,6 +61,20 @@ public class SpringTest2 {
 
     @Test
     public void test2(){
-        
+        Block block1 = new Block();
+        Block block2 = new Block();
+        block1.setPreviousHash(bChain.getLastHash());
+        try {
+            block1.addTransaction(walletA.sendFunds(walletB.getPublicKey(), 80f), bChain);
+        } catch (Exception e) {}
+        bChain.addBlock(block1);
+        block2.setPreviousHash(bChain.getLastHash());
+        try {
+            block1.addTransaction(walletB.sendFunds(walletA.getPublicKey(), 40f), bChain);
+        } catch (Exception e) {}
+        bChain.addBlock(block2);
+
+        assertEquals(60f, walletA.getBalance(), 0);
+        assertEquals(40f, walletB.getBalance(), 0);
     }
 }
